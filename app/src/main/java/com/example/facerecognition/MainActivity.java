@@ -18,9 +18,9 @@ import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int PICK_GALLERY_IMAGE = 1;
+    private static final int PICK_IMAGEVIEW_CONTENT = 1;
+    private static final int PICK_IMAGEVIEW2_CONTENT = 2;
 
-    private Bitmap galleryImage;
     private Bitmap image;
     private Bitmap image2;
     private ImageView imageView;
@@ -41,10 +41,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, PICK_GALLERY_IMAGE);
-                image = galleryImage;
-                galleryImage = null;
-                imageView.setImageBitmap(image);
+                startActivityForResult(photoPickerIntent, PICK_IMAGEVIEW_CONTENT);
             }
         });
 
@@ -53,10 +50,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, PICK_GALLERY_IMAGE);
-                image2 = galleryImage;
-                galleryImage = null;
-                imageView2.setImageBitmap(image2);
+                startActivityForResult(photoPickerIntent, PICK_IMAGEVIEW2_CONTENT);
             }
         });
 
@@ -74,11 +68,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_GALLERY_IMAGE && resultCode == RESULT_OK) {
+        if (requestCode == PICK_IMAGEVIEW_CONTENT && resultCode == RESULT_OK) {
             try {
                 Uri imageUri = data.getData();
                 InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                galleryImage = BitmapFactory.decodeStream(imageStream);
+                image = BitmapFactory.decodeStream(imageStream);
+                imageView.setImageBitmap(image);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(MainActivity.this, "Error loading gallery image.", Toast.LENGTH_LONG).show();
+            }
+        }else if (requestCode == PICK_IMAGEVIEW2_CONTENT && resultCode == RESULT_OK) {
+            try {
+                Uri imageUri = data.getData();
+                InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                image2 = BitmapFactory.decodeStream(imageStream);
+                imageView2.setImageBitmap(image2);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 Toast.makeText(MainActivity.this, "Error loading gallery image.", Toast.LENGTH_LONG).show();
