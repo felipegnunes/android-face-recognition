@@ -94,6 +94,8 @@ public class FaceNet {
         return distance;
     }
 
+
+
     private void convertBitmapToByteBuffer(Bitmap bitmap) {
         if (imgData == null) {
             return;
