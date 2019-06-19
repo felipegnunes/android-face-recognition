@@ -8,12 +8,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.facerecognition.FaceRecognition.FaceNet;
+
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
@@ -58,7 +62,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (image == null || image2 == null){
-                    Toast.makeText(getApplicationContext(), "Some image haven't been set yet.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "One of the images haven't been set yet.", Toast.LENGTH_SHORT).show();
+                }else{
+                    FaceNet facenet = null;
+                    try {
+                        facenet = new FaceNet(getAssets());
+
+                        /*float[][] embeddings = facenet.runFloat(image);
+
+                        for (int i = 0; i < 512; i++){
+                            Log.i("embeddings", String.valueOf(embeddings[0][i]));
+                        }*/
+
+                        double score = facenet.getSimilarityScore(image, image2);
+                        Log.i("score", String.valueOf(score));
+
+                        facenet.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
