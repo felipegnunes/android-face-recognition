@@ -14,11 +14,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.facerecognition.FaceDetection.Box;
+import com.example.facerecognition.FaceDetection.MTCNN;
 import com.example.facerecognition.FaceRecognition.FaceNet;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -65,8 +68,11 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "One of the images haven't been set yet.", Toast.LENGTH_SHORT).show();
                 }else{
                     FaceNet facenet = null;
-                    try {
-                        facenet = new FaceNet(getAssets());
+                    //try {
+
+                    testMTCNN(image);
+
+                        //facenet = new FaceNet(getAssets());
 
                         /*float[][] embeddings = facenet.runFloat(image);
 
@@ -74,16 +80,32 @@ public class MainActivity extends AppCompatActivity {
                             Log.i("embeddings", String.valueOf(embeddings[0][i]));
                         }*/
 
-                        double score = facenet.getSimilarityScore(image, image2);
-                        Log.i("score", String.valueOf(score));
+                        //double score = facenet.getSimilarityScore(image, image2);
+                        //Log.i("score", String.valueOf(score));
 
-                        facenet.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                        //facenet.close();
+                    //} catch (IOException e) {
+                    //    e.printStackTrace();
+                    //}
                 }
             }
         });
+    }
+
+    private void testMTCNN(Bitmap bitmap){
+        MTCNN mtcnn = new MTCNN(getAssets());
+        try {
+            Vector<Box> boxes = mtcnn.detectFaces(bitmap, 40);
+            Log.i("MTCNN", String.valueOf(boxes.size()));
+            for (int i = 0; i < boxes.size(); i++) {
+                for (int j = 0; j < boxes.get(i).landmark.length; j++){
+                    Log.i("MTCNN", String.valueOf(boxes.get(i).landmark[j]));
+                }
+
+            }
+        }catch (Exception e){
+            Log.i("MTCNN", "Error");
+        }
     }
 
     @Override
