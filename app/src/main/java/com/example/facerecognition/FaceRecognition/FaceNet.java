@@ -56,46 +56,6 @@ public class FaceNet {
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
     }
 
-    public void inspectModel(){
-        String tag = "Model Inspection";
-        Log.i(tag, "Number of input tensors: " + String.valueOf(tflite.getInputTensorCount()));
-        Log.i(tag, "Number of output tensors: " + String.valueOf(tflite.getOutputTensorCount()));
-
-        Log.i(tag, tflite.getInputTensor(0).toString());
-        Log.i(tag, "Input tensor data type: " + tflite.getInputTensor(0).dataType());
-        Log.i(tag, "Input tensor shape: " + Arrays.toString(tflite.getInputTensor(0).shape()));
-        Log.i(tag, "Output tensor 0 shape: " + Arrays.toString(tflite.getOutputTensor(0).shape()));
-    }
-
-    private float[][] run(Bitmap bitmap){
-        bitmap = resizedBitmap(bitmap, IMAGE_HEIGHT, IMAGE_WIDTH);
-        convertBitmapToByteBuffer(bitmap);
-
-        float[][] embeddings = new float[1][512];
-        tflite.run(imgData, embeddings);
-
-        return embeddings;
-    }
-
-    private Bitmap resizedBitmap(Bitmap bitmap, int height, int width){
-        return Bitmap.createScaledBitmap(bitmap, width, height, true);
-    }
-
-    public double getSimilarityScore(Bitmap face1, Bitmap face2){
-        float[][] face1_embedding = run(face1);
-        float[][] face2_embedding = run(face2);
-
-        double distance = 0.0;
-        for (int i = 0; i < EMBEDDING_SIZE; i++){
-            distance += (face1_embedding[0][i] - face2_embedding[0][i]) * (face1_embedding[0][i] - face2_embedding[0][i]);
-        }
-        distance = Math.sqrt(distance);
-
-        return distance;
-    }
-
-
-
     private void convertBitmapToByteBuffer(Bitmap bitmap) {
         if (imgData == null) {
             return;
@@ -116,6 +76,48 @@ public class FaceNet {
         imgData.putFloat((((pixelValue >> 16) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
         imgData.putFloat((((pixelValue >> 8) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
         imgData.putFloat(((pixelValue & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
+    }
+
+    public void inspectModel(){
+        String tag = "Model Inspection";
+        Log.i(tag, "Number of input tensors: " + String.valueOf(tflite.getInputTensorCount()));
+        Log.i(tag, "Number of output tensors: " + String.valueOf(tflite.getOutputTensorCount()));
+
+        Log.i(tag, tflite.getInputTensor(0).toString());
+        Log.i(tag, "Input tensor data type: " + tflite.getInputTensor(0).dataType());
+        Log.i(tag, "Input tensor shape: " + Arrays.toString(tflite.getInputTensor(0).shape()));
+        Log.i(tag, "Output tensor 0 shape: " + Arrays.toString(tflite.getOutputTensor(0).shape()));
+    }
+
+    private Bitmap resizedBitmap(Bitmap bitmap, int height, int width){
+        return Bitmap.createScaledBitmap(bitmap, width, height, true);
+    }
+
+    private Bitmap croppedBitmap(Bitmap bitmap, int upperCornerX, int upperCornerY, int height, int width){
+        return Bitmap.createBitmap(bitmap, upperCornerX, upperCornerY, width, height);
+    }
+
+    private float[][] run(Bitmap bitmap){
+        bitmap = resizedBitmap(bitmap, IMAGE_HEIGHT, IMAGE_WIDTH);
+        convertBitmapToByteBuffer(bitmap);
+
+        float[][] embeddings = new float[1][512];
+        tflite.run(imgData, embeddings);
+
+        return embeddings;
+    }
+
+    public double getSimilarityScore(Bitmap face1, Bitmap face2){
+        float[][] face1_embedding = run(face1);
+        float[][] face2_embedding = run(face2);
+
+        double distance = 0.0;
+        for (int i = 0; i < EMBEDDING_SIZE; i++){
+            distance += (face1_embedding[0][i] - face2_embedding[0][i]) * (face1_embedding[0][i] - face2_embedding[0][i]);
+        }
+        distance = Math.sqrt(distance);
+
+        return distance;
     }
 
     public void close(){
