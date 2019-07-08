@@ -34,6 +34,24 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imageView2;
     private Button button;
 
+    private Bitmap cropFace(Bitmap bitmap){
+        Bitmap croppedBitmap = null;
+        try {
+            MTCNN mtcnn = new MTCNN(getAssets());
+            Vector<Box> boxes = mtcnn.detectFaces(bitmap, 1);
+
+            int left = boxes.get(0).left();
+            int top = boxes.get(0).top();
+            int width = boxes.get(0).width();
+            int height = boxes.get(0).height();
+
+            croppedBitmap = Bitmap.createBitmap(bitmap, top, left, width, height);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return croppedBitmap;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,26 +85,34 @@ public class MainActivity extends AppCompatActivity {
                 if (image == null || image2 == null){
                     Toast.makeText(getApplicationContext(), "One of the images haven't been set yet.", Toast.LENGTH_SHORT).show();
                 }else{
+                    //testMTCNN(image);
+
                     FaceNet facenet = null;
-                    //try {
+                    try {
 
-                    testMTCNN(image);
-
-                        //facenet = new FaceNet(getAssets());
+                        facenet = new FaceNet(getAssets());
 
                         /*float[][] embeddings = facenet.runFloat(image);
-
                         for (int i = 0; i < 512; i++){
                             Log.i("embeddings", String.valueOf(embeddings[0][i]));
                         }*/
 
-                        //double score = facenet.getSimilarityScore(image, image2);
-                        //Log.i("score", String.valueOf(score));
+                        Bitmap face1 = cropFace(image);
+                        Bitmap face2 = cropFace(image2);
 
-                        //facenet.close();
-                    //} catch (IOException e) {
-                    //    e.printStackTrace();
-                    //}
+                        if (face1 != null && face2 != null) {
+                            double score = facenet.getSimilarityScore(cropFace(image), cropFace(image2));
+                            Log.i("score", String.valueOf(score));
+                        }else{
+                            if (face1 == null)
+                                Log.i("score", "Couldn't crop image 1.");
+                            if (face2 == null)
+                                Log.i("score", "Couldn't crop image 2.");
+                        }
+                        facenet.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -98,13 +124,28 @@ public class MainActivity extends AppCompatActivity {
             Vector<Box> boxes = mtcnn.detectFaces(bitmap, 40);
             Log.i("MTCNN", String.valueOf(boxes.size()));
             for (int i = 0; i < boxes.size(); i++) {
-                for (int j = 0; j < boxes.get(i).landmark.length; j++){
-                    Log.i("MTCNN", String.valueOf(boxes.get(i).landmark[j]));
-                }
-
+                Log.i("MTCNN", String.valueOf(boxes.get(i).left()));
+                Log.i("MTCNN", String.valueOf(boxes.get(i).top()));
+                Log.i("MTCNN", String.valueOf(boxes.get(i).bottom()));
+                Log.i("MTCNN", String.valueOf(boxes.get(i).right()));
+                Log.i("MTCNN", "width: " + String.valueOf(boxes.get(i).width()));
+                Log.i("MTCNN", "width: " + String.valueOf(boxes.get(i).width()));
             }
+
+            int left = boxes.get(0).left();
+            int top = boxes.get(0).top();
+            int right = boxes.get(0).right();
+            int bottom = boxes.get(0).bottom();
+            int width = boxes.get(0).width();
+            int height = boxes.get(0).height();
+
+            Bitmap croppedBitmap = Bitmap.createBitmap(bitmap, top, left, width, height);
+
+            imageView.setImageBitmap(croppedBitmap);
+
+
         }catch (Exception e){
-            Log.i("MTCNN", "Error");
+            e.printStackTrace();
         }
     }
 
