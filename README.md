@@ -1,13 +1,15 @@
 # FaceRecognition
 An Android application for face recognition.
 
+This is an Android application for face recognition. The main purpose of this project is to serve as
+
 O objetivo original deste projeto é que ele sirva como base para que outros estudantes possam implantar seus modelos em aplicativos Android. Originalmente, queria-se que todas as redes utilizadas fossem implementadas através da nova API do TensorFlow para Android (TensorFlow Lite). Infelizmente, eu não consegui fazer funcionar a MTCNN com a nova API (redes com entradas e saídas de tamanho variável são mais difíceis de se fazer trabalhar). 
 
-## Face Detection (MTCNN)
-The face detection package was taken from [this repository](https://github.com/vcvycy/MTCNN4Android). It uses the MTCNN model for face detection and the model is runned by an old TensorFlow API for Android.
+## Face Detection
+The face detection package was taken from [this repository](https://github.com/vcvycy/MTCNN4Android). It uses the MTCNN model for face detection and it is runned using an old TensorFlow API for Android.
 
-## Face Recognition (FaceNet)
-The face recognition model was obtained through the instructions in [this repository](https://github.com/jiangxiluning/facenet_mtcnn_to_mobile). The model is executed using TensorFlow Lite.
+## Face Recognition
+The face recognition model used is FaceNet. It was obtained through the instructions in [this repository](https://github.com/jiangxiluning/facenet_mtcnn_to_mobile). The model is runned using the TensorFlow Lite API.
 
 ## Usage
 If you want to use the code of this project in your own application, then follow the steps below:
