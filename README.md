@@ -1,5 +1,5 @@
 # FaceRecognition
-This is an Android application for face recognition. The main purpose of this project is to serve as basis for others who want to deploy their models to an Android application.
+This is an Android application for face recognition. The main purpose of this project is to serve as basis for others who want to deploy their deep learning models to an Android application.
 
 ## Face Detection
 The face detection package was taken from [this repository](https://github.com/vcvycy/MTCNN4Android). It uses the MTCNN model for face detection and it is runned using an old TensorFlow API (TensorflowInferenceInterface) for Android.
@@ -22,7 +22,7 @@ android {
 
 dependencies {
     implementation 'org.tensorflow:tensorflow-lite:0.0.0-nightly'  // Official API
-    implementation 'org.tensorflow:tensorflow-android:+'  // Old API
+    implementation 'org.tensorflow:tensorflow-android:+'  // Old API (TensorflowInferenceInterface)
 }
 ```
 - Copy the packages FaceRecognition and FaceDetection.
