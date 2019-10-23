@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.facerecognition.FaceDetection.Box;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imageView2;
     private Button button;
     private MTCNN mtcnn;
+    private TextView textView;
 
     private Bitmap cropFace(Bitmap bitmap, MTCNN mtcnn){
         Bitmap croppedBitmap = null;
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         imageView2 = findViewById(R.id.imageView2);
         button = findViewById(R.id.button);
-        //mtcnn = new MTCNN(getAssets());
+        textView = findViewById(R.id.textView);
 
         imageView.setOnClickListener(view -> {
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
@@ -121,7 +123,9 @@ public class MainActivity extends AppCompatActivity {
                 if (face1 != null && face2 != null) {
                     double score = facenet.getSimilarityScore(face1, face2);
                     Log.i("score", String.valueOf(score));
-                    Toast.makeText(MainActivity.this, "Similarity score: " + score, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(MainActivity.this, "Similarity score: " + score, Toast.LENGTH_LONG).show();
+                    String text = String.format("Similarity score = %.2f", score);
+                    textView.setText(text);
                 }
 
                 facenet.close();
@@ -139,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 InputStream imageStream = getContentResolver().openInputStream(imageUri);
                 image = BitmapFactory.decodeStream(imageStream);
                 imageView.setImageBitmap(image);
+                textView.setText("");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 Toast.makeText(MainActivity.this, "Error loading gallery image.", Toast.LENGTH_LONG).show();
@@ -149,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
                 InputStream imageStream = getContentResolver().openInputStream(imageUri);
                 image2 = BitmapFactory.decodeStream(imageStream);
                 imageView2.setImageBitmap(image2);
+                textView.setText("");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 Toast.makeText(MainActivity.this, "Error loading gallery image.", Toast.LENGTH_LONG).show();
