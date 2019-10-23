@@ -46,13 +46,17 @@ public class MTCNN {
         loadModel();
     }
 
+    public void close(){
+        inferenceInterface.close();
+    }
+
     private boolean loadModel() {
         //AssetManager
         try {
             inferenceInterface = new TensorFlowInferenceInterface(assetManager, MODEL_FILE);
             Log.d("Facenet","[*]load model success");
         }catch(Exception e){
-            Log.e("Facenet","[*]load model failed"+e);
+            Log.e("Facenet","[*]load model failed" + e);
             return false;
         }
         return true;

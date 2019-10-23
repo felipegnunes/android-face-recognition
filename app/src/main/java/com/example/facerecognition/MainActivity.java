@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private Button button;
     private MTCNN mtcnn;
 
-    private Bitmap cropFace(Bitmap bitmap){
+    private Bitmap cropFace(Bitmap bitmap, MTCNN mtcnn){
         Bitmap croppedBitmap = null;
         try {
             Vector<Box> boxes = mtcnn.detectFaces(bitmap, 10);
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         imageView2 = findViewById(R.id.imageView2);
         button = findViewById(R.id.button);
-        mtcnn = new MTCNN(getAssets());
+        //mtcnn = new MTCNN(getAssets());
 
         imageView.setOnClickListener(view -> {
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
@@ -94,34 +94,37 @@ public class MainActivity extends AppCompatActivity {
             if (image == null || image2 == null){
                 Toast.makeText(getApplicationContext(), "One of the images haven't been set yet.", Toast.LENGTH_SHORT).show();
             }else{
-                new Thread(() -> {
-                    try {
-                        FaceNet facenet = new FaceNet(getAssets());
+                MTCNN mtcnn = new MTCNN(getAssets());
 
-                        Bitmap face1 = cropFace(image);
-                        Bitmap face2 = cropFace(image2);
+                Bitmap face1 = cropFace(image, mtcnn);
+                Bitmap face2 = cropFace(image2, mtcnn);
 
-                        if (face1 != null)
-                            runOnUiThread(() -> imageView.setImageBitmap(face1));
-                        else
-                            Log.i("detect", "Couldn't crop image 1.");
+                mtcnn.close();
 
-                        if (face2 != null)
-                            runOnUiThread(() -> imageView2.setImageBitmap(face2));
-                        else
-                            Log.i("detect", "Couldn't crop image 2.");
+                FaceNet facenet = null;
+                try {
+                    facenet = new FaceNet(getAssets());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-                        if (face1 != null && face2 != null) {
-                            double score = facenet.getSimilarityScore(face1, face2);
-                            Log.i("score", String.valueOf(score));
-                            runOnUiThread(() -> Toast.makeText(MainActivity.this, "Similarity score: " + score, Toast.LENGTH_LONG).show());
-                        }
+                if (face1 != null)
+                    imageView.setImageBitmap(face1);
+                else
+                    Log.i("detect", "Couldn't crop image 1.");
 
-                        facenet.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
+                if (face2 != null)
+                    imageView2.setImageBitmap(face2);
+                else
+                    Log.i("detect", "Couldn't crop image 2.");
+
+                if (face1 != null && face2 != null) {
+                    double score = facenet.getSimilarityScore(face1, face2);
+                    Log.i("score", String.valueOf(score));
+                    Toast.makeText(MainActivity.this, "Similarity score: " + score, Toast.LENGTH_LONG).show();
+                }
+
+                facenet.close();
             }
         });
     }

@@ -73,9 +73,12 @@ public class FaceNet {
     }
 
     private void addPixelValue(int pixelValue){
-        imgData.putFloat((((pixelValue >> 16) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
-        imgData.putFloat((((pixelValue >> 8) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
-        imgData.putFloat(((pixelValue & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
+        //imgData.putFloat((((pixelValue >> 16) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
+        //imgData.putFloat((((pixelValue >> 8) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
+        //imgData.putFloat(((pixelValue & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
+        imgData.putFloat(((pixelValue >> 16) & 0xFF) / 255.0f);
+        imgData.putFloat(((pixelValue >> 8) & 0xFF) / 255.0f);
+        imgData.putFloat((pixelValue & 0xFF) / 255.0f);
     }
 
     public void inspectModel(){
